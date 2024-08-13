@@ -20,7 +20,7 @@ const StudentList = () => {
     };
 
     fetchStudents();
-  }, []);
+  }, [setStudents, students]);
 
   const handleUpdate = async (id, updatedData) => {
     try {

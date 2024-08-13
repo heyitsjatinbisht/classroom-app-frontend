@@ -19,7 +19,7 @@ const TeacherList = () => {
     };
 
     fetchTeachers();
-  }, []);
+  }, [setTeachers, teachers]);
 
   const handleUpdate = async (id, updatedData) => {
     try {
