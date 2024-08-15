@@ -14,37 +14,37 @@ const PrincipalDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Link
           to="create-user"
-          className="p-4 bg-pink-500 text-white text-center cursor-pointer rounded-lg hover:bg-purple-600 transition duration-200"
+          className="p-4 bg-pink-500 text-white text-center rounded-lg hover:bg-pink-600 transition duration-200"
         >
           Create User
         </Link>
         <Link
           to="create-classroom"
-          className="p-4 bg-purple-500 text-white text-center cursor-pointer rounded-lg hover:bg-purple-600 transition duration-200"
+          className="p-4 bg-purple-500 text-white text-center rounded-lg hover:bg-purple-600 transition duration-200"
         >
           Create Classroom
         </Link>
         <Link
           to="manage-timetable"
-          className="p-4 bg-indigo-500 text-white text-center cursor-pointer rounded-lg hover:bg-indigo-600 transition duration-200"
+          className="p-4 bg-indigo-500 text-white text-center rounded-lg hover:bg-indigo-600 transition duration-200"
         >
           Manage Timetable
         </Link>
         <Link
           to="assign-teacher"
-          className="p-4 bg-red-500 text-white text-center cursor-pointer rounded-lg hover:bg-red-600 transition duration-200"
+          className="p-4 bg-red-500 text-white text-center rounded-lg hover:bg-red-600 transition duration-200"
         >
           Assign Teacher
         </Link>
         <Link
           to="view-teachers"
-          className="p-4 bg-green-500 text-white text-center cursor-pointer rounded-lg hover:bg-green-600 transition duration-200"
+          className="p-4 bg-green-500 text-white text-center rounded-lg hover:bg-green-600 transition duration-200"
         >
           View Teachers
         </Link>
         <Link
           to="view-students"
-          className="p-4 bg-yellow-500 text-white text-center cursor-pointer rounded-lg hover:bg-yellow-600 transition duration-200"
+          className="p-4 bg-yellow-500 text-white text-center rounded-lg hover:bg-yellow-600 transition duration-200"
         >
           View Students
         </Link>

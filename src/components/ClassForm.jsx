@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { createClassroom } from "../services/classroomService";
+import { useDispatch, useSelector } from "react-redux";
+import { createClassroom } from "../features/classroomSlice";
 import { toast } from "react-toastify";
 
 const ClassForm = () => {
@@ -7,6 +8,9 @@ const ClassForm = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [days, setDays] = useState([]);
+
+  const dispatch = useDispatch();
+  const { status, error } = useSelector((state) => state.classroom);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,26 +25,29 @@ const ClassForm = () => {
       return;
     }
 
-    try {
-      const classroomData = {
-        name,
-        startTime,
-        endTime,
-        days,
-      };
+    const classroomData = {
+      name,
+      startTime,
+      endTime,
+      days,
+    };
 
-      await createClassroom(classroomData);
-      toast.success("Classroom created successfully!");
+    // Dispatch createClassroom action
+    dispatch(createClassroom(classroomData))
+      .unwrap()
+      .then(() => {
+        toast.success("Classroom created successfully!");
 
-      // Clear the form fields after success
-      setName("");
-      setStartTime("");
-      setEndTime("");
-      setDays([]);
-    } catch (error) {
-      toast.error("Failed to create classroom. Please try again.");
-      console.error("Error creating classroom:", error);
-    }
+        // Clear the form fields after success
+        setName("");
+        setStartTime("");
+        setEndTime("");
+        setDays([]);
+      })
+      .catch((error) => {
+        toast.error("Failed to create classroom. Please try again.");
+        console.error("Error creating classroom:", error);
+      });
   };
 
   const handleDayToggle = (day) => {
@@ -147,9 +154,15 @@ const ClassForm = () => {
         <button
           type="submit"
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          disabled={status === "loading"} // Disable button while loading
         >
-          Create Classroom
+          {status === "loading" ? "Creating..." : "Create Classroom"}
         </button>
+
+        {/* Display Error */}
+        {status === "failed" && (
+          <p className="text-red-500 mt-2">Error: {error}</p>
+        )}
       </form>
     </div>
   );

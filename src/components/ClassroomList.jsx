@@ -1,34 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import TimetableForm from "./TimetableForm";
-import { getClassrooms } from "../services/classroomService";
+import {
+  fetchClassrooms,
+  selectClassroom,
+  selectShowForm,
+} from "../features/classroomSlice";
 
 const ClassroomList = () => {
-  const [classrooms, setClassrooms] = useState([]);
-  const [selectedClassroom, setSelectedClassroom] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const dispatch = useDispatch();
+  const classrooms = useSelector((state) => state.classroom.classrooms);
+  const selectedClassroom = useSelector(selectClassroom);
+  const showForm = useSelector(selectShowForm);
 
   useEffect(() => {
-    const fetchClassrooms = async () => {
-      try {
-        const res = await getClassrooms();
-
-        setClassrooms(res.data);
-      } catch (error) {
-        console.error("Error fetching classrooms:", error);
-      }
-    };
-
-    fetchClassrooms();
-  }, []);
+    dispatch(fetchClassrooms());
+  }, [dispatch]);
 
   const handleAddTimetableClick = (classroomId) => {
-    setSelectedClassroom(classroomId);
-    setShowForm(true);
+    dispatch(selectClassroom({ classroomId, showForm: true }));
   };
 
   const handleCloseForm = () => {
-    setShowForm(false);
-    setSelectedClassroom(null);
+    dispatch(selectClassroom({ classroomId: null, showForm: false }));
   };
 
   return (
@@ -65,7 +59,10 @@ const ClassroomList = () => {
       </table>
 
       {showForm && selectedClassroom && (
-        <TimetableForm classroomId={selectedClassroom} />
+        <TimetableForm
+          classroomId={selectedClassroom}
+          onClose={handleCloseForm}
+        />
       )}
     </div>
   );

@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { registerUser } from "../services/userService";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, fetchCurrentUser } from "../features/userSlice";
+import { toast } from "react-toastify";
 
 const RegisterForm = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Student");
-  const [error, setError] = useState("");
   const [isPrincipal, setIsPrincipal] = useState(false);
 
+  const dispatch = useDispatch();
+  const { error } = useSelector((state) => state.user);
+
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.role === "Principal") {
-      setIsPrincipal(true);
-    }
+    dispatch(fetchCurrentUser())
+      .unwrap()
+      .then((userData) => {
+        if (userData && userData.role === "Principal") {
+          setIsPrincipal(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch user:", error);
+      });
   }, []);
 
-  const handleRegister = async (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
     try {
-      await registerUser({ fullName, email, password, role });
+      dispatch(registerUser({ fullName, email, password, role }));
       toast.success("Registration successful!");
 
       // Reset form fields after successful registration
@@ -39,7 +47,6 @@ const RegisterForm = () => {
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleRegister}>
           <div className="mb-4">
             <label className="block text-gray-700">Full Name</label>
@@ -92,7 +99,6 @@ const RegisterForm = () => {
           </button>
         </form>
       </div>
-      <ToastContainer />
     </div>
   );
 };

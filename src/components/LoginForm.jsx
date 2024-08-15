@@ -1,37 +1,32 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/userService";
+import { loginUser } from "../features/userSlice";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  // Access error and loading state
+  const { error, loading } = useSelector((state) => state.user);
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const response = await loginUser({ email, password });
-      const user = response.data.user;
-
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // Redirect based on user role
-
-      const userRole = user.role;
-
-      localStorage.setItem("role", user.role);
-
-      if (userRole === "Principal") {
-        navigate("/principal-dashboard");
-      } else if (userRole === "Teacher") {
-        navigate("/teacher-dashboard");
-      } else if (userRole === "Student") {
-        navigate("/student-dashboard");
+    dispatch(loginUser({ email, password })).then((result) => {
+      if (result.meta.requestStatus === "fulfilled") {
+        // Extract user data from payload
+        const { role } = result.payload.user;
+        if (role === "Principal") {
+          navigate("/principal-dashboard");
+        } else if (role === "Teacher") {
+          navigate("/teacher-dashboard");
+        } else if (role === "Student") {
+          navigate("/student-dashboard");
+        }
       }
-    } catch (err) {
-      setError("Invalid email or password");
-    }
+    });
   };
 
   return (
@@ -67,8 +62,9 @@ const LoginForm = () => {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition-colors duration-200"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

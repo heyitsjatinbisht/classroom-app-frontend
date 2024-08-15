@@ -1,35 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { getUsers, updateUser, deleteUser } from "../services/userService";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers, updateUser, deleteUser } from "../features/userSlice";
 
 const StudentList = () => {
-  const [students, setStudents] = useState([]);
-  const [users, setusers] = useState([]);
+  const dispatch = useDispatch();
+  const students = useSelector((state) =>
+    state.user.users.filter((user) => user.role === "Student")
+  );
+  const status = useSelector((state) => state.user.status);
+  const error = useSelector((state) => state.user.error);
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const res = await getUsers();
-
-        setusers(res.data);
-        const studentList = users.filter((user) => user.role === "Student");
-
-        setStudents(studentList);
-      } catch (error) {
-        console.error("Failed to fetch students:", error);
-      }
-    };
-
-    fetchStudents();
-  }, [setStudents, students]);
+    if (status === "idle") {
+      dispatch(fetchUsers());
+    }
+  }, [dispatch, status]);
 
   const handleUpdate = async (id, updatedData) => {
     try {
-      const updatedStudent = await updateUser(id, updatedData);
-      setStudents(
-        students.map((student) =>
-          student._id === id ? updatedStudent : student
-        )
-      );
+      await dispatch(updateUser({ userId: id, updatedData })).unwrap();
     } catch (error) {
       console.error("Failed to update student:", error);
     }
@@ -38,8 +27,7 @@ const StudentList = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
       try {
-        await deleteUser(id);
-        setStudents(students.filter((student) => student._id !== id));
+        await dispatch(deleteUser(id)).unwrap();
       } catch (error) {
         console.error("Failed to delete student:", error);
       }
@@ -89,6 +77,7 @@ const StudentList = () => {
           ))}
         </tbody>
       </table>
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 };
