@@ -1,38 +1,64 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useClassrooms } from "../hooks/useClassrooms";
 import { assignStudentsToClassroom } from "../utils/classroom";
 import { toast } from "react-toastify";
 import { useStudents } from "../hooks/useStudents";
+import { updateStudent } from "../features/studentSlice";
 
 const AssignStudent = () => {
+  const dispatch = useDispatch();
   const [selectedClassroom, setSelectedClassroom] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedStudents, setSelectedStudents] = useState([]);
 
   const classrooms = useSelector((store) => store.classroom.classrooms);
   const students = useSelector((store) => store.students);
   useClassrooms();
   useStudents();
 
+  const filteredStudents = students?.filter(
+    (student) => !student.assignedClassroom
+  );
+
+  const handleStudentSelection = (e) => {
+    const options = e.target.options;
+    const selected = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selected.push(options[i].value);
+      }
+    }
+    setSelectedStudents(selected);
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      if (selectedClassroom && selectedStudent) {
+      if (selectedClassroom && selectedStudents) {
         const res = await assignStudentsToClassroom(
-          selectedStudent,
+          selectedStudents,
           selectedClassroom
         );
 
+        selectedStudents?.forEach((id) => {
+          dispatch(
+            updateStudent({
+              id,
+              changes: { assignedClassroom: selectedClassroom },
+            })
+          );
+        });
+
         setSelectedClassroom("");
-        setSelectedStudent("");
+        setSelectedStudents([]);
         toast.success("Class Assigned");
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error.response?.data.message || "Something went wrong");
 
       setSelectedClassroom("");
-      setSelectedStudent("");
+      setSelectedStudents("");
     }
   }
   return (
@@ -64,25 +90,29 @@ const AssignStudent = () => {
 
         <div>
           <label
-            htmlFor="teacher"
+            htmlFor="students"
             className="block text-sm font-medium text-gray-700"
           >
-            Teacher
+            Students
           </label>
           <select
-            id="teacher"
-            value={selectedStudent}
-            onChange={(e) => setSelectedStudent(e.target.value)}
+            id="students"
+            multiple
+            value={selectedStudents}
+            onChange={handleStudentSelection}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             required
           >
-            <option value="">Select Student</option>
-            {students?.map((teacher) => (
-              <option key={teacher._id} value={teacher._id}>
-                {teacher.fullName}
+            {filteredStudents?.map((student) => (
+              <option key={student._id} value={student._id}>
+                {student.fullName}
               </option>
             ))}
           </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Hold <strong>Ctrl</strong> (or Command on Mac) to select multiple
+            students.
+          </p>
         </div>
 
         <button

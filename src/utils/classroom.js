@@ -14,12 +14,11 @@ export const assignTeacherToClassroom = async (classroomId, teacherId) => {
   return response.data.data;
 };
 
-export const assignStudentsToClassroom = async (studentsId, classroomId) => {
-  const response = await api.post(
-    "/classroom/assign-students",
-    studentsId,
-    classroomId
-  );
+export const assignStudentsToClassroom = async (studentIds, classroomId) => {
+  const response = await api.post("/classroom/assign-students", {
+    studentIds,
+    classroomId,
+  });
   return response.data.data;
 };
 
