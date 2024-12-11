@@ -1,29 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Navbar from "./components/Navbar";
-import { Outlet } from "react-router-dom";
-import { fetchCurrentUser } from "./features/userSlice";
-import { useDispatch } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCurrentUser } from "./utils/auth";
+import { addUser } from "./features/userSlice";
 
 const Layout = () => {
-  const [role, setRole] = useState("");
   const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const getUserRole = async () => {
+    const getCurrentUser = async () => {
       try {
-        const user = await dispatch(fetchCurrentUser()).unwrap();
-        setRole(user.role);
+        if (!user) {
+          const fetchedUser = await fetchCurrentUser();
+          dispatch(addUser(fetchedUser));
+        }
       } catch (error) {
-        console.error("Failed to fetch user role:", error);
+        if (error.response.request.status === 401) {
+          navigate("/");
+        }
       }
     };
 
-    getUserRole();
-  }, [dispatch]);
+    getCurrentUser();
+  }, [user, dispatch]);
 
   return (
     <div>
-      <Navbar role={role} />
+      <Navbar role={user?.role} />
       <main className="p-6">
         <Outlet />
       </main>

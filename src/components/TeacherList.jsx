@@ -1,38 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { useTeacher } from "../hooks/useTeacher";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers, updateUser, deleteUser } from "../features/userSlice";
+import { deleteUser } from "../utils/users";
+import { removeTeacher } from "../features/teacherSlice";
 
 const TeacherList = () => {
   const dispatch = useDispatch();
-  const teachers = useSelector((state) =>
-    state.user.users.filter((user) => user.role === "Teacher")
-  );
-  const status = useSelector((state) => state.user.status);
-  const error = useSelector((state) => state.user.error);
+  const teachers = useSelector((store) => store.teachers);
+  useTeacher();
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchUsers());
-    }
-  }, [dispatch, status]);
-
-  const handleUpdate = async (id, updatedData) => {
-    try {
-      await dispatch(updateUser({ userId: id, updatedData })).unwrap();
-    } catch (error) {
-      console.error("Failed to update teacher:", error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this teacher?")) {
-      try {
-        await dispatch(deleteUser(id)).unwrap();
-      } catch (error) {
-        console.error("Failed to delete teacher:", error);
-      }
-    }
-  };
+  async function deleteTeacher(id) {
+    await deleteUser(id);
+    dispatch(removeTeacher(id));
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -51,24 +31,17 @@ const TeacherList = () => {
           </tr>
         </thead>
         <tbody className="text-gray-700">
-          {teachers.map((teacher) => (
+          {teachers?.map((teacher) => (
             <tr key={teacher._id}>
               <td className="w-1/3 py-3 px-4">{teacher.fullName}</td>
               <td className="w-1/3 py-3 px-4">{teacher.email}</td>
               <td className="w-1/3 py-3 px-4">
-                <button
-                  onClick={() =>
-                    handleUpdate(teacher._id, {
-                      /* pass updatedData here */
-                    })
-                  }
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                >
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
                   Update
                 </button>
                 <button
-                  onClick={() => handleDelete(teacher._id)}
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => deleteTeacher(teacher._id)}
                 >
                   Delete
                 </button>
@@ -77,7 +50,7 @@ const TeacherList = () => {
           ))}
         </tbody>
       </table>
-      {error && <p className="text-red-500">{error}</p>}
+      {/* {error && <p className="text-red-500">{error}</p>} */}
     </div>
   );
 };

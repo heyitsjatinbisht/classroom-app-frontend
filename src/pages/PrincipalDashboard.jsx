@@ -6,6 +6,7 @@ import RegistrationPage from "./RegisterationPage";
 import CreateClassroomPage from "./CreateClassroomPage";
 import AssignTeacherPage from "./AssignTeacherPage";
 import ManageTimetablePage from "./ManageTimeTablePage";
+import AssignStudent from "./AssignStudent";
 
 const PrincipalDashboard = () => {
   return (
@@ -28,13 +29,19 @@ const PrincipalDashboard = () => {
           to="manage-timetable"
           className="p-4 bg-indigo-500 text-white text-center rounded-lg hover:bg-indigo-600 transition duration-200"
         >
-          Manage Timetable
+          Classroom List
         </Link>
         <Link
           to="assign-teacher"
           className="p-4 bg-red-500 text-white text-center rounded-lg hover:bg-red-600 transition duration-200"
         >
           Assign Teacher
+        </Link>
+        <Link
+          to="assign-student"
+          className="p-4 bg-orange-500 text-white text-center rounded-lg hover:bg-red-600 transition duration-200"
+        >
+          Assign Student
         </Link>
         <Link
           to="view-teachers"
@@ -55,6 +62,7 @@ const PrincipalDashboard = () => {
         <Route path="view-students" element={<ViewStudentsPage />} />
         <Route path="create-classroom" element={<CreateClassroomPage />} />
         <Route path="assign-teacher" element={<AssignTeacherPage />} />
+        <Route path="assign-student" element={<AssignStudent />} />
         <Route path="manage-timetable" element={<ManageTimetablePage />} />
       </Routes>
     </div>

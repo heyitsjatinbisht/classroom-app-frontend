@@ -1,35 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { registerUser, fetchCurrentUser } from "../features/userSlice";
+import { registerUser, fetchCurrentUser } from "../utils/auth";
 import { toast } from "react-toastify";
 
 const RegisterForm = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Student");
+  const [role, setRole] = useState("Teacher");
   const [isPrincipal, setIsPrincipal] = useState(false);
 
-  const dispatch = useDispatch();
-  const { error } = useSelector((state) => state.user);
-
   useEffect(() => {
-    dispatch(fetchCurrentUser())
-      .unwrap()
-      .then((userData) => {
+    const checkUserRole = async () => {
+      try {
+        const userData = await fetchCurrentUser(); // Fetch current user data directly
         if (userData && userData.role === "Principal") {
           setIsPrincipal(true);
         }
-      })
-      .catch((error) => {
-        console.error("Failed to fetch user:", error);
-      });
+      } catch (error) {
+        console.error("Failed to fetch current user:", error.message);
+      }
+    };
+
+    checkUserRole();
   }, []);
 
   const handleRegister = (e) => {
     e.preventDefault();
     try {
-      dispatch(registerUser({ fullName, email, password, role }));
+      registerUser({ fullName, email, password, role });
       toast.success("Registration successful!");
 
       // Reset form fields after successful registration
@@ -39,12 +37,12 @@ const RegisterForm = () => {
       setRole("Student");
     } catch (err) {
       setError(err.message || "An error occurred");
-      toast.error(error);
+      toast.error(err);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex justify-center items-center bg-gray-100 p-4">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
         <form onSubmit={handleRegister}>

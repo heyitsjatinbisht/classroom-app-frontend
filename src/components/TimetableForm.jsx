@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { createTimetable } from "../features/classroomSlice";
+
 import { toast } from "react-toastify";
+import { createTimetable } from "../utils/timetable";
+import { useDispatch } from "react-redux";
 
 const TimetableForm = ({ classroomId, onClose }) => {
-  const dispatch = useDispatch();
   const [subject, setSubject] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -25,9 +25,12 @@ const TimetableForm = ({ classroomId, onClose }) => {
 
     try {
       // Dispatch the createTimetable action
-      await dispatch(
-        createTimetable({ classroomId, subject, startTime, endTime, day })
-      ).unwrap();
+      const res = await createTimetable(classroomId, {
+        subject,
+        startTime,
+        endTime,
+        day,
+      });
 
       toast.success("Timetable created successfully!");
 

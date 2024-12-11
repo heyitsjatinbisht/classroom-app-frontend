@@ -1,23 +1,29 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../features/userSlice";
+import { loginUser } from "../utils/auth";
+import { addUser } from "../features/userSlice";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("principal@classroom.com");
+  const [password, setPassword] = useState("Admin");
+  const [loading, setLoading] = useState(false); // Manage button loading state
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Access error and loading state
-  const { error, loading } = useSelector((state) => state.user);
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password })).then((result) => {
-      if (result.meta.requestStatus === "fulfilled") {
-        // Extract user data from payload
-        const { role } = result.payload.user;
+    setLoading(true);
+
+    try {
+      const user = await loginUser({ email, password });
+
+      if (user) {
+        dispatch(addUser(user.user)); // Add user to the Redux store
+
+        const role = user.user.role;
+
         if (role === "Principal") {
           navigate("/principal-dashboard");
         } else if (role === "Teacher") {
@@ -25,15 +31,21 @@ const LoginForm = () => {
         } else if (role === "Student") {
           navigate("/student-dashboard");
         }
+      } else {
+        toast.error("Login failed. Please try again.");
       }
-    });
+    } catch (error) {
+      toast.error(error.message || "An error occurred while logging in.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex justify-center items-center bg-gray-100 px-4 py-8">
       <div className="w-full max-w-lg p-8 bg-white rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {/* {error && <p className="text-red-500 text-center mb-4">{error}</p>} */}
         <form onSubmit={handleLogin} className="flex flex-col">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-medium mb-1">
@@ -62,9 +74,10 @@ const LoginForm = () => {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition-colors duration-200"
-            disabled={loading}
+            // disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {/* {loading ? "Logging in..." : "Login"} */}
+            Login
           </button>
         </form>
       </div>

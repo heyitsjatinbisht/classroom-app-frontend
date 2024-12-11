@@ -7,17 +7,11 @@ import StudentDashboard from "./pages/StudentDashboard";
 import Layout from "./Layout";
 
 const App = () => {
-  const getUserFromLocalStorage = () => {
-    const user = localStorage.getItem("user");
-    return user ? JSON.parse(user) : null;
-  };
-  const user = getUserFromLocalStorage();
-  const userRole = user ? user.role : null;
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route element={<Layout role={userRole} />}>
+        <Route element={<Layout />}>
           <Route
             path="/principal-dashboard/*"
             element={<PrincipalDashboard />}

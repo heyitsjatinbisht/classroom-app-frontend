@@ -1,38 +1,38 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useClassrooms } from "../hooks/useClassrooms";
-import { useTeacher } from "../hooks/useTeacher";
-import { assignTeacherToClassroom } from "../utils/classroom";
+import { assignStudentsToClassroom } from "../utils/classroom";
 import { toast } from "react-toastify";
+import { useStudents } from "../hooks/useStudents";
 
-const AssignTeacherPage = () => {
+const AssignStudent = () => {
   const [selectedClassroom, setSelectedClassroom] = useState("");
-  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState("");
 
   const classrooms = useSelector((store) => store.classroom.classrooms);
-  const teachers = useSelector((store) => store.teachers);
+  const students = useSelector((store) => store.students);
   useClassrooms();
-  useTeacher();
+  useStudents();
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      if (selectedClassroom && selectedTeacher) {
-        const res = await assignTeacherToClassroom(
-          selectedClassroom,
-          selectedTeacher
+      if (selectedClassroom && selectedStudent) {
+        const res = await assignStudentsToClassroom(
+          selectedStudent,
+          selectedClassroom
         );
 
         setSelectedClassroom("");
-        setSelectedTeacher("");
+        setSelectedStudent("");
         toast.success("Class Assigned");
       }
     } catch (error) {
       toast.error(error.response.data.message || "Something went wrong");
 
       setSelectedClassroom("");
-      setSelectedTeacher("");
+      setSelectedStudent("");
     }
   }
   return (
@@ -71,13 +71,13 @@ const AssignTeacherPage = () => {
           </label>
           <select
             id="teacher"
-            value={selectedTeacher}
-            onChange={(e) => setSelectedTeacher(e.target.value)}
+            value={selectedStudent}
+            onChange={(e) => setSelectedStudent(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             required
           >
-            <option value="">Select Teacher</option>
-            {teachers?.map((teacher) => (
+            <option value="">Select Student</option>
+            {students?.map((teacher) => (
               <option key={teacher._id} value={teacher._id}>
                 {teacher.fullName}
               </option>
@@ -89,11 +89,11 @@ const AssignTeacherPage = () => {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
         >
-          Assign Teacher
+          Assign Student
         </button>
       </form>
     </div>
   );
 };
 
-export default AssignTeacherPage;
+export default AssignStudent;

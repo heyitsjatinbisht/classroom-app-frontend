@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createClassroom } from "../features/classroomSlice";
+import { useDispatch } from "react-redux";
+import { createClassroom } from "../utils/classroom";
 import { toast } from "react-toastify";
 
 const ClassForm = () => {
@@ -10,7 +10,6 @@ const ClassForm = () => {
   const [days, setDays] = useState([]);
 
   const dispatch = useDispatch();
-  const { status, error } = useSelector((state) => state.classroom);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,22 +31,19 @@ const ClassForm = () => {
       days,
     };
 
-    // Dispatch createClassroom action
-    dispatch(createClassroom(classroomData))
-      .unwrap()
-      .then(() => {
-        toast.success("Classroom created successfully!");
+    try {
+      await createClassroom(classroomData);
+      toast.success("Classroom created successfully!");
 
-        // Clear the form fields after success
-        setName("");
-        setStartTime("");
-        setEndTime("");
-        setDays([]);
-      })
-      .catch((error) => {
-        toast.error("Failed to create classroom. Please try again.");
-        console.error("Error creating classroom:", error);
-      });
+      // Clear form fields on success
+      setName("");
+      setStartTime("");
+      setEndTime("");
+      setDays([]);
+    } catch (error) {
+      toast.error("Failed to create classroom. Please try again.");
+      console.error("Error creating classroom:", error);
+    }
   };
 
   const handleDayToggle = (day) => {
