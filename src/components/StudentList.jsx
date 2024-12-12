@@ -7,6 +7,7 @@ import { removeStudent } from "../features/studentSlice";
 const StudentList = () => {
   const dispatch = useDispatch();
   const students = useSelector((store) => store.students);
+  const user = useSelector((store) => store.user);
 
   useStudents();
 
@@ -23,30 +24,37 @@ const StudentList = () => {
             <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
               Name
             </th>
-            <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
-              Email
-            </th>
-            <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
-              Actions
-            </th>
+            {user?.role !== "Student" && (
+              <>
+                {" "}
+                <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
+                  Email
+                </th>
+                <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
+                  Actions
+                </th>{" "}
+              </>
+            )}
           </tr>
         </thead>
-        <tbody className="text-gray-700">
+        <tbody className="text-gray-700b font-semibold">
           {students?.map((student) => (
             <tr key={student._id}>
               <td className="w-1/3 py-3 px-4">{student.fullName}</td>
-              <td className="w-1/3 py-3 px-4">{student.email}</td>
-              <td className="w-1/3 py-3 px-4">
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
-                  Update
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => deleteStudent(student._id)}
-                >
-                  Delete
-                </button>
-              </td>
+              {user?.role !== "Student" &&
+                (<td className="w-1/3 py-3 px-4">{student.email}</td>)(
+                  <td className="w-1/3 py-3 px-4">
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
+                      Update
+                    </button>
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                      onClick={() => deleteStudent(student._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
             </tr>
           ))}
         </tbody>
