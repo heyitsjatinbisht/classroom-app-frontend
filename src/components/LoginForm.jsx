@@ -6,9 +6,9 @@ import { addUser } from "../features/userSlice";
 import { toast } from "react-toastify";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("principal@classroom.com");
-  const [password, setPassword] = useState("Admin");
-  const [loading, setLoading] = useState(false); // Manage button loading state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

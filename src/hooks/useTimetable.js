@@ -10,7 +10,6 @@ export const useTimetable = () => {
   console.log(user);
 
   const getTimetable = async () => {
-    console.log("Call");
     try {
       const data = await fetchTimetable(user.assignedClassroom);
       console.log(data);
@@ -26,8 +25,6 @@ export const useTimetable = () => {
         "User and assignedClassroom are available, calling getTimetable"
       );
       getTimetable();
-    } else {
-      console.log("User or assignedClassroom not yet initialized");
     }
   }, [user]);
 
