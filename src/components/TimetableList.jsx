@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useTimetable } from "../hooks/useTimetable";
 
-const TimetableList = ({ timetable }) => {
+const TimetableList = () => {
+  const timetable = useTimetable();
+
   const [sortConfig, setSortConfig] = useState({
-    key: "period",
+    key: "startTime",
     direction: "ascending",
   });
 
@@ -26,7 +29,7 @@ const TimetableList = ({ timetable }) => {
 
   return (
     <div className="overflow-x-auto">
-      {timetable.length === 0 ? (
+      {timetable?.length === 0 ? (
         <p className="text-gray-500">No timetable entries available.</p>
       ) : (
         <table className="min-w-full bg-white border border-gray-300">
@@ -34,10 +37,21 @@ const TimetableList = ({ timetable }) => {
             <tr>
               <th
                 className="py-2 px-4 border-b cursor-pointer"
-                onClick={() => handleSort("period")}
+                onClick={() => handleSort("startTime")}
               >
-                Period{" "}
-                {sortConfig.key === "period"
+                Start Time{" "}
+                {sortConfig.key === "startTime"
+                  ? sortConfig.direction === "ascending"
+                    ? "▲"
+                    : "▼"
+                  : ""}
+              </th>
+              <th
+                className="py-2 px-4 border-b cursor-pointer"
+                onClick={() => handleSort("endTime")}
+              >
+                End Time{" "}
+                {sortConfig.key === "endTime"
                   ? sortConfig.direction === "ascending"
                     ? "▲"
                     : "▼"
@@ -56,10 +70,10 @@ const TimetableList = ({ timetable }) => {
               </th>
               <th
                 className="py-2 px-4 border-b cursor-pointer"
-                onClick={() => handleSort("classroomId")}
+                onClick={() => handleSort("day")}
               >
-                Classroom{" "}
-                {sortConfig.key === "classroomId"
+                Day{" "}
+                {sortConfig.key === "day"
                   ? sortConfig.direction === "ascending"
                     ? "▲"
                     : "▼"
@@ -68,11 +82,12 @@ const TimetableList = ({ timetable }) => {
             </tr>
           </thead>
           <tbody>
-            {sortedTimetable.map((entry) => (
+            {sortedTimetable?.map((entry) => (
               <tr key={entry._id}>
-                <td className="py-2 px-4 border-b">{entry.period}</td>
+                <td className="py-2 px-4 border-b">{entry.startTime}</td>
+                <td className="py-2 px-4 border-b">{entry.endTime}</td>
                 <td className="py-2 px-4 border-b">{entry.subject}</td>
-                <td className="py-2 px-4 border-b">{entry.classroomId}</td>
+                <td className="py-2 px-4 border-b">{entry.day}</td>
               </tr>
             ))}
           </tbody>

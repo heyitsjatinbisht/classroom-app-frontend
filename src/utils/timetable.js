@@ -9,9 +9,7 @@ export const createTimetable = async (classroomId, timetableData) => {
 };
 
 export const fetchTimetable = async (classroomId) => {
-  const response = await api.get(
-    `classroom/${classroomId}/timetable`,
-    timetableData
-  );
+  const response = await api.get(`classroom/${classroomId}/timetable`);
+
   return response.data.data;
 };

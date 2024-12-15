@@ -26,13 +26,12 @@ const StudentList = () => {
             </th>
             {user?.role !== "Student" && (
               <>
-                {" "}
                 <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
                   Email
                 </th>
                 <th className="w-1/3 py-3 px-4 uppercase font-semibold text-sm">
                   Actions
-                </th>{" "}
+                </th>
               </>
             )}
           </tr>
@@ -41,8 +40,9 @@ const StudentList = () => {
           {students?.map((student) => (
             <tr key={student._id}>
               <td className="w-1/3 py-3 px-4">{student.fullName}</td>
-              {user?.role !== "Student" &&
-                (<td className="w-1/3 py-3 px-4">{student.email}</td>)(
+              {user?.role !== "Student" && (
+                <>
+                  <td className="w-1/3 py-3 px-4">{student.email}</td>
                   <td className="w-1/3 py-3 px-4">
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
                       Update
@@ -53,8 +53,9 @@ const StudentList = () => {
                     >
                       Delete
                     </button>
-                  </td>
-                )}
+                  </td>{" "}
+                </>
+              )}
             </tr>
           ))}
         </tbody>
